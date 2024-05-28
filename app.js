@@ -8,7 +8,7 @@ const port = 8000;
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.static("/images", express.static(process.cwd() + "/public/uploads"));
+app.use("/images", express.static(process.cwd() + "/public/uploads"));
 app.use("/", router);
 
 try {
