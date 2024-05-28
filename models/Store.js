@@ -23,3 +23,6 @@ const storeSchema = new Schema({
     required: true,
   },
 });
+
+const Store = mongoose.model("Store", storeSchema);
+module.exports = Store;
