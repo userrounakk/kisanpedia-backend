@@ -6,6 +6,11 @@ const locationSchema = new Schema({
     type: String,
     required: true,
   },
+  type: {
+    type: String,
+    enum: ["City", "District", "Province"],
+    required: true,
+  },
 });
 const Location = mongoose.model("Location", locationSchema);
 module.exports = Location;
