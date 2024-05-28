@@ -174,4 +174,34 @@ const updateRole = async (req, res) => {
   });
 };
 
-module.exports = { register, login, updateRole, approveUser };
+const destroy = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: {
+          type: "Not Found",
+          content: "User not found.",
+        },
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: {
+        type: "Success",
+        content: "User deleted successfully.",
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      success: false,
+      message: {
+        type: "Server Error",
+        content: e.message,
+      },
+    });
+  }
+};
+module.exports = { register, login, updateRole, approveUser, destroy };
