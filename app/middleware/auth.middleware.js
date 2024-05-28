@@ -84,7 +84,21 @@ const approvedUser = async (req, res, next) => {
 };
 
 const getUser = async (req, res, next) => {
-  const token = req.headers.authorization.split(" ")[1];
+  if (!req.headers.authorization) {
+    return res.status(401).json({
+      success: false,
+      message: {
+        type: "Unauthorized",
+        content: "Please login to access this resource.",
+      },
+    });
+  }
+  let token = req.headers.authorization.split(" ");
+  if (token.length > 1) {
+    token = token[1];
+  } else {
+    token = token[0];
+  }
   if (!token) {
     return res.status(401).json({
       success: false,
