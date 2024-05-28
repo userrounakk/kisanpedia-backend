@@ -18,6 +18,11 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    enum: ["admin", "superadmin"],
+    default: "admin",
+  },
   approved: {
     type: Boolean,
     default: false,
