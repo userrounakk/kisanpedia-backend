@@ -1,7 +1,5 @@
-const { router } = require("express");
-
+const { Router } = require("express");
 const router = Router();
-
 const auth = require("./auth.routes");
 const plant = require("./plant.routes");
 const location = require("./location.routes");
