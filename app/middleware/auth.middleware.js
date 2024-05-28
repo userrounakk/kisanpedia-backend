@@ -1,3 +1,4 @@
+const { verifyToken } = require("../../helpers/token.helper");
 const User = require("../../models/user");
 const bcrypt = require("bcrypt");
 
@@ -82,10 +83,53 @@ const approvedUser = async (req, res, next) => {
   next();
 };
 
+const getUser = async (req, res, next) => {
+  const token = req.headers.authorization.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: {
+        type: "Unauthorized",
+        content: "Please login to access this resource.",
+      },
+    });
+  }
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    return res.status(401).json({
+      success: false,
+      message: {
+        type: "Unauthorized",
+        content: "Token is invalid or expired. Please login again to continue.",
+      },
+    });
+  }
+  const user = await User.findById(decoded.id);
+  req.user = user;
+  next();
+};
+
+const isSuperAdmin = async (req, res, next) => {
+  const user = req.user;
+  console.log(user.role);
+  if (user.role != "superadmin") {
+    return res.status(401).json({
+      success: false,
+      message: {
+        type: "Unauthorized",
+        content: "You are not authorized to perform this action.",
+      },
+    });
+  }
+  next();
+};
+
 module.exports = {
   registerValidate,
   loginValidate,
   hashPassword,
   existingEmail,
   approvedUser,
+  getUser,
+  isSuperAdmin,
 };

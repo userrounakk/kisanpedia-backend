@@ -4,9 +4,16 @@ const {
   hashPassword,
   registerValidate,
   loginValidate,
+  getUser,
+  isSuperAdmin,
 } = require("../app/middleware/auth.middleware");
 
-const { register, login } = require("../app/controller/auth.controller");
+const {
+  register,
+  login,
+  approveUser,
+  updateRole,
+} = require("../app/controller/auth.controller");
 
 const router = Router();
 
@@ -19,5 +26,7 @@ router.post(
 );
 
 router.post("/login", loginValidate, login);
+router.put("/approve", getUser, isSuperAdmin, approveUser);
+router.put("/makesuperadmin", getUser, isSuperAdmin, updateRole);
 
 module.exports = router;

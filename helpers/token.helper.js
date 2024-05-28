@@ -4,4 +4,15 @@ function generateToken(user) {
     expiresIn: "1d",
   });
 }
-module.exports = { generateToken };
+
+function verifyToken(token) {
+  if (token) {
+    try {
+      let verified = jwt.verify(token, process.env.JWT_SECRET);
+      return verified;
+    } catch (e) {
+      return null;
+    }
+  }
+}
+module.exports = { generateToken, verifyToken };
