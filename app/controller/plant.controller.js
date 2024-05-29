@@ -24,7 +24,7 @@ const create = async (req, res) => {
       req.file.destination + "/" + filename,
       function (err) {
         if (err) {
-          console.log("ERROR: " + err);
+          throw err;
         }
       }
     );
@@ -83,9 +83,8 @@ const index = async (req, res, next) => {
 };
 
 const edit = async (req, res) => {
-  const { name, price, description } = req.body;
-  console.log(req.body);
-  if (!name && !price && !description) {
+  const { name, price, description, location } = req.body;
+  if (!name && !price && !description && !location) {
     return res.status(400).json({
       success: false,
       message: {
@@ -109,6 +108,7 @@ const edit = async (req, res) => {
     if (name) plant.name = name;
     if (price) plant.price = price;
     if (description) plant.description = description;
+    if (location) plant.location = location;
 
     await plant.save();
     return res.status(200).json({
@@ -127,106 +127,6 @@ const edit = async (req, res) => {
       },
     });
   }
-};
-
-const addLocation = async (req, res) => {
-  const { location } = req.body;
-  const plantId = req.params.id;
-
-  if (!location || !plantId) {
-    return res.status(400).json({
-      success: false,
-      message: {
-        type: "Bad Request",
-        content: !location
-          ? "Please provide location to add"
-          : "Please provide plant ID",
-      },
-    });
-  }
-
-  const plant = await Plant.findById(plantId);
-  if (!plant) {
-    return res.status(404).json({
-      success: false,
-      message: {
-        type: "Not Found",
-        content: "Plant not found",
-      },
-    });
-  }
-
-  const locations = await Promise.all(
-    location.map(async (loc) => {
-      let newLocation = await Location.findById(loc);
-      if (!newLocation) {
-        throw new Error("Location not found");
-      }
-      return newLocation;
-    })
-  );
-
-  plant.location.push(...locations);
-  await plant.save();
-
-  return res.status(200).json({
-    success: true,
-    message: {
-      type: "Location Added",
-      content: "Location added successfully",
-    },
-  });
-};
-
-const removeLocation = async (req, res) => {
-  const { location } = req.body;
-  const plantId = req.params.id;
-
-  if (!location || !plantId) {
-    return res.status(400).json({
-      success: false,
-      message: {
-        type: "Bad Request",
-        content: !location
-          ? "Please provide location to remove"
-          : "Please provide plant ID",
-      },
-    });
-  }
-
-  const plant = await Plant.findById(plantId);
-  if (!plant) {
-    return res.status(404).json({
-      success: false,
-      message: {
-        type: "Not Found",
-        content: "Plant not found",
-      },
-    });
-  }
-
-  const locations = await Promise.all(
-    location.map(async (loc) => {
-      let newLocation = await Location.findById(loc);
-      if (!newLocation) {
-        throw new Error("Location not found");
-      }
-      return newLocation._id.toString();
-    })
-  );
-
-  plant.location = plant.location.filter((loc) => {
-    return !locations.includes(loc.toString());
-  });
-  await plant.save();
-
-  return res.status(200).json({
-    success: true,
-    message: {
-      type: "Location Removed",
-      content: "Location removed successfully",
-    },
-  });
 };
 
 const updateImage = async (req, res) => {
@@ -269,7 +169,7 @@ const updateImage = async (req, res) => {
     req.file.destination + "/" + filename,
     function (err) {
       if (err) {
-        console.log("ERROR: " + err);
+        throw err;
       }
     }
   );
@@ -328,8 +228,6 @@ module.exports = {
   create,
   index,
   edit,
-  addLocation,
-  removeLocation,
   updateImage,
   destroy,
 };

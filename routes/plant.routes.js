@@ -9,8 +9,6 @@ const {
   create,
   index,
   edit,
-  addLocation,
-  removeLocation,
   updateImage,
   destroy,
 } = require("../app/controller/plant.controller");
@@ -29,8 +27,6 @@ router.post(
 
 router.get("/", index);
 router.put("/edit/:id", getUser, edit);
-router.put("/addlocation/:id", getUser, addLocation);
-router.put("/removelocation/:id", getUser, removeLocation);
 router.put(
   "/updateimage/:id",
   getUser,
