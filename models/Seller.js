@@ -36,3 +36,6 @@ const sellerSchema = new Schema({
     default: 0,
   },
 });
+
+const Seller = mongoose.model("Seller", sellerSchema);
+module.exports = Seller;
