@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const { ObjectId } = require("mongodb");
 
 const sellerSchema = new Schema({
   name: {
@@ -11,7 +12,7 @@ const sellerSchema = new Schema({
     required: true,
   },
   location: {
-    type: ObjectId,
+    type: [ObjectId],
     ref: "Location",
     required: true,
   },
