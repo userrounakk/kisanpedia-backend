@@ -24,7 +24,7 @@ const create = async (req, res) => {
       req.file.destination + "/" + filename,
       function (err) {
         if (err) {
-          throw err;
+          throw new Error("Error renaming file. Error: " + err);
         }
       }
     );
@@ -169,7 +169,7 @@ const updateImage = async (req, res) => {
     req.file.destination + "/" + filename,
     function (err) {
       if (err) {
-        throw err;
+        throw new Error("Error renaming file. Error: " + err);
       }
     }
   );

@@ -25,7 +25,13 @@ const create = async (req, res) => {
       req.file.destination + "/" + filename,
       function (err) {
         if (err) {
-          throw err;
+          return res.status(500).json({
+            success: false,
+            message: {
+              type: "Server Error",
+              content: "Error renaming file. Error: " + err,
+            },
+          });
         }
       }
     );
@@ -57,7 +63,7 @@ const create = async (req, res) => {
   }
 };
 
-const index = async (req, res, next) => {
+const index = async (req, res) => {
   try {
     const sellers = await Seller.find().lean();
     let sellerList = await Promise.all(
@@ -176,13 +182,7 @@ const editImage = async (req, res) => {
       });
     }
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: {
-          type: "Validation Error",
-          content: "Image is required",
-        },
-      });
+      throw new Error("Error renaming file. Error: " + err);
     }
     let filename =
       seller.name.toLowerCase().split(" ").join("-") +
@@ -194,7 +194,7 @@ const editImage = async (req, res) => {
       req.file.destination + "/" + filename,
       function (err) {
         if (err) {
-          throw err;
+          throw new Error("Error renaming file. Error: " + err);
         }
       }
     );
