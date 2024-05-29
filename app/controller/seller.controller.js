@@ -25,7 +25,7 @@ const create = async (req, res) => {
       req.file.destination + "/" + filename,
       function (err) {
         if (err) {
-          console.log("ERROR: " + err);
+          throw err;
         }
       }
     );
@@ -194,7 +194,7 @@ const editImage = async (req, res) => {
       req.file.destination + "/" + filename,
       function (err) {
         if (err) {
-          console.log("ERROR: " + err);
+          throw err;
         }
       }
     );
