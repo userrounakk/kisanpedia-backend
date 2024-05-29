@@ -125,7 +125,6 @@ const getUser = async (req, res, next) => {
 
 const isSuperAdmin = async (req, res, next) => {
   const user = req.user;
-  console.log(user.role);
   if (user.role != "superadmin") {
     return res.status(401).json({
       success: false,
