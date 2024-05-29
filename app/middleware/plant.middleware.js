@@ -35,20 +35,26 @@ const validate = async (req, res, next) => {
       },
     });
   }
-  if (location.length >= 1) {
-    location.forEach(async (loc) => {
-      l = await Location.findById(loc);
-      if (!l) {
-        return res.status(400).json({
-          success: false,
-          message: {
-            type: "Validation Error",
-            content: "Invalid Location. Location not found",
-          },
-        });
-      }
+
+  try {
+    await Promise.all(
+      location.map(async (loc) => {
+        const l = await Location.findById(loc);
+        if (!l) {
+          throw new Error("Invalid Location. Location not found");
+        }
+      })
+    );
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: {
+        type: "Validation Error",
+        content: error.message,
+      },
     });
   }
+
   next();
 };
 
