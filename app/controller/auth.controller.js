@@ -1,11 +1,29 @@
-const { generateToken } = require("../../helpers/token.helper");
+const { generateToken, verifyToken } = require("../../helpers/token.helper");
 const User = require("../../models/user");
 const bcrypt = require("bcrypt");
+const fs = require("fs");
 
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const user = new User({ name, email, password });
+    let user = false;
+    if (req.file) {
+      let filename =
+        email.toLowerCase() + "." + req.file.filename.split(".")[1];
+      fs.rename(
+        req.file.path,
+        req.file.destination + "/" + filename,
+        function (err) {
+          if (err) {
+            throw new Error("Error renaming file. Error: " + err);
+          }
+        }
+      );
+      const image = filename;
+      user = new User({ name, email, password, image });
+    } else {
+      user = new User({ name, email, password });
+    }
     await user.save();
     if (user) {
       return res.status(201).json({
@@ -33,6 +51,16 @@ const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (user) {
+      if (!user.approved) {
+        return res.status(401).json({
+          success: false,
+          message: {
+            type: "Unauthorized",
+            content:
+              "You account has not been approved yet. Please contact an admin for approval.",
+          },
+        });
+      }
       const match = await bcrypt.compare(password, user.password);
       if (match) {
         const token = generateToken(user);
@@ -43,6 +71,11 @@ const login = async (req, res) => {
             content: "User logged in successfully.",
           },
           token,
+          user: {
+            name: user.name,
+            role: user.role,
+            image: `/images/users/${user.image}`,
+          },
         });
       } else {
         return res.status(401).json({
@@ -113,6 +146,39 @@ const approveUser = async (req, res) => {
       content: "User approved successfully.",
     },
   });
+};
+
+const listUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, "name email role image");
+    users.forEach((user) => {
+      user.image = `/images/users/${user.image}`;
+    });
+    if (!users) {
+      return res.status(404).json({
+        success: false,
+        message: {
+          type: "Not Found",
+          content: "No users found.",
+        },
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: {
+        type: "Success",
+        data: users,
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      success: false,
+      message: {
+        type: "Server Error",
+        content: e.message,
+      },
+    });
+  }
 };
 
 const updateRole = async (req, res) => {
@@ -204,4 +270,47 @@ const destroy = async (req, res) => {
     });
   }
 };
-module.exports = { register, login, updateRole, approveUser, destroy };
+
+const validateToken = async (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({
+      success: false,
+      message: {
+        type: "Bad Request",
+        content: "Please provide a token.",
+      },
+    });
+  }
+  try {
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      throw new Error("Invalid token.");
+    }
+    return res.status(200).json({
+      success: true,
+      message: {
+        type: "Success",
+        content: "Token is valid.",
+      },
+    });
+  } catch (e) {
+    return res.status(401).json({
+      success: false,
+      message: {
+        type: "Unauthorized",
+        content: "Token is invalid or expired.",
+      },
+    });
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  updateRole,
+  approveUser,
+  destroy,
+  validateToken,
+  listUsers,
+};

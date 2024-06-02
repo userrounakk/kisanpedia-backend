@@ -2,6 +2,11 @@ const { verifyToken } = require("../../helpers/token.helper");
 const User = require("../../models/user");
 const bcrypt = require("bcrypt");
 
+const setPath = (req, res, next) => {
+  req.dir = "public/uploads/users";
+  next();
+};
+
 const registerValidate = (req, res, next) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
@@ -76,7 +81,7 @@ const approvedUser = async (req, res, next) => {
       message: {
         type: "Unauthorized",
         content:
-          "User is not approved yet. Contact an administrator for approval.",
+          "Your account is not approved yet. Please Contact an administrator for approval.",
       },
     });
   }
@@ -145,4 +150,5 @@ module.exports = {
   approvedUser,
   getUser,
   isSuperAdmin,
+  setPath,
 };

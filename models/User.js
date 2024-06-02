@@ -6,6 +6,10 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  image: {
+    type: String,
+    default: "placeholder.webp",
+  },
   email: {
     type: String,
     required: true,
