@@ -23,7 +23,7 @@ const myStorage = multer.diskStorage({
 
 const imageFilter = (req, file, cb) => {
   let ext = file.originalname.split(".").pop();
-  let allowed_extension = ["jpg", "jpeg", "png", "webp", "bmp", "svg"];
+  let allowed_extension = ["jpg", "jpeg", "png", "webp", "bmp", "svg", "avif"];
   if (allowed_extension.includes(ext.toLowerCase())) {
     cb(null, true);
   } else {
