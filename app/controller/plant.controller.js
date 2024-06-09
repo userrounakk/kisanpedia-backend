@@ -224,10 +224,58 @@ const destroy = async (req, res) => {
   }
 };
 
+const show = async (req, res) => {
+  const id = req.params.id;
+  if (!id) {
+    return res.status(400).json({
+      success: false,
+      message: {
+        type: "Bad Request",
+        content: "Please provide plant ID",
+      },
+    });
+  }
+  try {
+    const plant = await Plant.findById(id).lean();
+    if (!plant) {
+      return res.status(404).json({
+        success: false,
+        message: {
+          type: "Not Found",
+          content: "Plant not found",
+        },
+      });
+    }
+    let locationIds = plant.location;
+    let locationDocs = await Location.find({ _id: { $in: locationIds } });
+    let locations = locationDocs.map((loc) => loc.location);
+    return res.status(200).json({
+      success: true,
+      data: {
+        _id: plant._id,
+        name: plant.name,
+        image: "/images/plants/" + plant.image,
+        price: plant.price,
+        location: locations,
+        description: plant.description,
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      success: false,
+      message: {
+        type: "Server Error",
+        content: "Error fetching plant. Error: " + e,
+      },
+    });
+  }
+};
+
 module.exports = {
   create,
   index,
   edit,
   updateImage,
   destroy,
+  show,
 };

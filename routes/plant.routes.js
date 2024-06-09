@@ -11,6 +11,7 @@ const {
   edit,
   updateImage,
   destroy,
+  show,
 } = require("../app/controller/plant.controller");
 const { getUser } = require("../app/middleware/auth.middleware");
 const router = Router();
@@ -34,6 +35,7 @@ router.put(
   uploader.single("image"),
   updateImage
 );
+router.get("/:id", show);
 router.delete("/delete/:id", getUser, destroy);
 
 module.exports = router;
