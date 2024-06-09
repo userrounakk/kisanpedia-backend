@@ -9,7 +9,7 @@ const register = async (req, res) => {
     let user = false;
     if (req.file) {
       let filename =
-        email.toLowerCase() + "." + req.file.filename.split(".")[1];
+        email.split(".")[0] + "." + req.file.filename.split(".")[1];
       fs.rename(
         req.file.path,
         req.file.destination + "/" + filename,
