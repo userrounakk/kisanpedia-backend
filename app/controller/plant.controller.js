@@ -1,4 +1,5 @@
 const Plant = require("../../models/Plant");
+const Seller = require("../../models/Seller");
 const Location = require("../../models/Location");
 
 const fs = require("fs");
@@ -248,7 +249,19 @@ const show = async (req, res) => {
     }
     let locationIds = plant.location;
     let locationDocs = await Location.find({ _id: { $in: locationIds } });
-    let locations = locationDocs.map((loc) => loc.location);
+    let locations = locationDocs.map((loc) => {
+      return {
+        id: loc._id.toString(),
+        name: loc.location,
+      };
+    });
+    let sellers = await Seller.find({ products: id });
+    sellers = sellers.map((seller) => {
+      return {
+        id: seller._id.toString(),
+        name: seller.name,
+      };
+    });
     return res.status(200).json({
       success: true,
       data: {
@@ -257,6 +270,7 @@ const show = async (req, res) => {
         image: "/images/plants/" + plant.image,
         price: plant.price,
         location: locations,
+        sellers: sellers,
         description: plant.description,
       },
     });
