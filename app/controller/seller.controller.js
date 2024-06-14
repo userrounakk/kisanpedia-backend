@@ -218,6 +218,56 @@ const editImage = async (req, res) => {
   }
 };
 
+const show = async (req, res) => {
+  const id = req.params.id;
+  if (!id) {
+    return res.status(400).json({
+      success: false,
+      message: {
+        type: "Bad Request",
+        content: "Please provide seller ID",
+      },
+    });
+  }
+  try {
+    const seller = await Seller.findById(id).lean();
+    if (!seller) {
+      return res.status(404).json({
+        success: false,
+        message: {
+          type: "Not Found",
+          content: "Seller not found",
+        },
+      });
+    }
+    let locationIds = seller.location;
+    let locations = await Location.find({ _id: { $in: locationIds } });
+    let productIds = seller.products;
+    let products = await Plant.find({ _id: { $in: productIds } });
+    return res.status(200).json({
+      success: true,
+      data: {
+        _id: seller._id,
+        name: seller.name,
+        image: "/images/sellers/" + seller.imageUrl,
+        price: seller.price,
+        location: locations,
+        products: products,
+        description: seller.description,
+        phoneNumber: seller.phoneNumber,
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      success: false,
+      message: {
+        type: "Server Error",
+        content: "Error fetching seller. Error: " + e,
+      },
+    });
+  }
+};
+
 const destroy = async (req, res) => {
   try {
     const sellerId = req.params.id;
@@ -263,5 +313,6 @@ module.exports = {
   index,
   edit,
   editImage,
+  show,
   destroy,
 };

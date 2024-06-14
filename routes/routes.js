@@ -11,5 +11,14 @@ router.use("/stores", store);
 router.use("/plants", plant);
 router.use("/location", location);
 router.use("/sellers", seller);
+router.use("/", (req, res) => {
+  return res.status(404).json({
+    success: false,
+    message: {
+      type: "Not Found",
+      content: "Route not found",
+    },
+  });
+});
 
 module.exports = router;

@@ -12,6 +12,7 @@ const {
   edit,
   editImage,
   destroy,
+  show,
 } = require("../app/controller/seller.controller");
 const router = Router();
 
@@ -26,6 +27,7 @@ router.post(
 );
 
 router.get("/", index);
+router.get("/:id", show);
 router.put("/edit/:id", getUser, edit);
 router.put(
   "/updateimage/:id",
