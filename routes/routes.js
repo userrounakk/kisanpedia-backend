@@ -6,6 +6,9 @@ const location = require("./location.routes");
 const seller = require("./seller.routes");
 const store = require("./store.routes");
 
+router.get("/", (req, res) => {
+  res.send("The Server is running.");
+});
 router.use("/auth", auth);
 router.use("/stores", store);
 router.use("/plants", plant);
