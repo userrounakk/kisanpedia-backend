@@ -1,4 +1,6 @@
 const Location = require("../../models/Location");
+const Seller = require("../../models/Seller");
+const Plant = require("../../models/Plant");
 const create = async (req, res) => {
   const { location, type } = req.body;
   try {
@@ -95,6 +97,50 @@ const edit = async (req, res) => {
   }
 };
 
+const show = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({
+      success: false,
+      message: {
+        type: "Validation Error",
+        content: "Location ID is required.",
+      },
+    });
+  }
+  try {
+    const location = await Location.findById(id);
+    if (!location) {
+      return res.status(404).json({
+        success: false,
+        message: {
+          type: "Not Found",
+          content: "Location not found.",
+        },
+      });
+    }
+    const plants = await Plant.find({ location: id });
+    const sellers = await Seller.find({ location: id });
+    return res.status(200).json({
+      success: true,
+      data: {
+        location: location.location,
+        type: location.type,
+        sellers: sellers,
+        plants: plants,
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      success: false,
+      message: {
+        type: "Server Error",
+        content: "Error fetching location. Error: " + e,
+      },
+    });
+  }
+};
+
 const destroy = async (req, res) => {
   const { id } = req.params;
   if (!id) {
@@ -134,4 +180,4 @@ const destroy = async (req, res) => {
   }
 };
 
-module.exports = { create, index, edit, destroy };
+module.exports = { create, index, edit, show, destroy };
