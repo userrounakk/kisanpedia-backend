@@ -150,7 +150,7 @@ const approveUser = async (req, res) => {
 
 const listUsers = async (req, res) => {
   try {
-    const users = await User.find({}, "name email role image");
+    const users = await User.find({}, "name email role image approved");
     users.forEach((user) => {
       user.image = `/images/users/${user.image}`;
     });

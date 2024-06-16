@@ -36,7 +36,7 @@ router.get("/users", getUser, isSuperAdmin, listUsers);
 router.post("/validate", validateToken);
 router.post("/login", loginValidate, login);
 router.put("/approve", getUser, isSuperAdmin, approveUser);
-router.put("/makesuperadmin", getUser, isSuperAdmin, updateRole);
+router.put("/update-role", getUser, isSuperAdmin, updateRole);
 router.delete("/delete/:id", getUser, isSuperAdmin, destroy);
 
 module.exports = router;
