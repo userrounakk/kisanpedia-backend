@@ -5,10 +5,13 @@ const plant = require("./plant.routes");
 const location = require("./location.routes");
 const seller = require("./seller.routes");
 const store = require("./store.routes");
+const dashboardContent = require("../app/controller/dashboard.controller");
+const { getUser } = require("../app/middleware/auth.middleware");
 
 router.get("/", (req, res) => {
   res.send("The Server is running.");
 });
+router.get("/dashboard", getUser, dashboardContent);
 router.use("/auth", auth);
 router.use("/stores", store);
 router.use("/plants", plant);
