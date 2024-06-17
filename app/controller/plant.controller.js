@@ -3,7 +3,6 @@ const Seller = require("../../models/Seller");
 const Location = require("../../models/Location");
 
 const fs = require("fs");
-const { log } = require("console");
 const create = async (req, res) => {
   const { name, price, location, description } = req.body;
   if (!req.file) {
