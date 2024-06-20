@@ -11,6 +11,10 @@ const locationSchema = new Schema({
     enum: ["City", "District", "Province"],
     required: true,
   },
+  approved: {
+    type: Boolean,
+    default: false,
+  },
 });
 const Location = mongoose.model("Location", locationSchema);
 module.exports = Location;

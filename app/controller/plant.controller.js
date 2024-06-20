@@ -29,7 +29,15 @@ const create = async (req, res) => {
       }
     );
     const image = filename;
-    const newPlant = new Plant({ name, image, price, location, description });
+    const approved = true;
+    const newPlant = new Plant({
+      name,
+      image,
+      price,
+      location,
+      description,
+      approved,
+    });
     await newPlant.save();
     return res.status(201).json({
       success: true,
@@ -50,7 +58,7 @@ const create = async (req, res) => {
 };
 const index = async (req, res, next) => {
   try {
-    const plants = await Plant.find().lean();
+    const plants = await Plant.find({ approved: true }).lean();
     let plantList = await Promise.all(
       plants.map(async (plant) => {
         let locationIds = plant.location;

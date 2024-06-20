@@ -25,6 +25,10 @@ const plantsSchema = new Schema({
     type: String,
     required: true,
   },
+  approved: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 plantsSchema.plugin(uniqueValidator, {

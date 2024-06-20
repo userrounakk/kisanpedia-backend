@@ -28,6 +28,10 @@ const sellerSchema = new Schema({
     type: String,
     required: true,
   },
+  approved: {
+    type: Boolean,
+    default: false,
+  },
   rating: {
     type: Number,
     default: 0,

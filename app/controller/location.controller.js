@@ -4,7 +4,8 @@ const Plant = require("../../models/Plant");
 const create = async (req, res) => {
   const { location, type } = req.body;
   try {
-    const newLocation = new Location({ location, type });
+    const approved = true;
+    const newLocation = new Location({ location, type, approved });
     await newLocation.save();
     return res.status(201).json({
       success: true,
@@ -26,7 +27,10 @@ const create = async (req, res) => {
 
 const index = async (req, res) => {
   try {
-    const locations = await Location.find();
+    const locations = await Location.find(
+      { approved: true },
+      "location type"
+    ).lean();
     return res.status(200).json({
       success: true,
       data: locations,

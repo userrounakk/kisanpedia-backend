@@ -4,6 +4,7 @@ const {
   setPath,
   validate,
   duplicate,
+  setProductPath,
 } = require("../app/middleware/seller.middleware");
 const uploader = require("../app/middleware/uploader.middleware");
 const {
@@ -13,7 +14,9 @@ const {
   editImage,
   destroy,
   show,
+  apply,
 } = require("../app/controller/seller.controller");
+const sellerUploader = require("../app/middleware/seller.uploader");
 const router = Router();
 
 router.post(
@@ -37,5 +40,13 @@ router.put(
   editImage
 );
 router.delete("/delete/:id", getUser, destroy);
+router.post(
+  "/apply",
+  sellerUploader.fields([
+    { name: "products", maxCount: 5 },
+    { name: "image", maxCount: 1 },
+  ]),
+  apply
+);
 
 module.exports = router;
