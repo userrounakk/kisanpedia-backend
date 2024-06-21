@@ -104,6 +104,46 @@ const index = async (req, res) => {
   }
 };
 
+const unapproved = async (req, res) => {
+  try {
+    const sellers = await Seller.find({ approved: false }).lean();
+    let sellerList = await Promise.all(
+      sellers.map(async (seller) => {
+        let locationIds = seller.location;
+        let locationDocs = await Location.find({ _id: { $in: locationIds } });
+        let locations = locationDocs.map((loc) => loc.location);
+        let productIds = seller.products;
+        let productDocs = await Plant.find({ _id: { $in: productIds } });
+        let products = productDocs.map((pro) => pro.name);
+
+        return {
+          _id: seller._id,
+          name: seller.name,
+          image: "/images/sellers/" + seller.imageUrl,
+          price: seller.price,
+          location: locations,
+          products: products,
+          description: seller.description,
+          phoneNumber: seller.phoneNumber,
+        };
+      })
+    );
+    return res.status(200).json({
+      success: true,
+      data: sellerList,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      success: false,
+      message: {
+        type: "Server Error",
+        content: "Error fetching sellers. Error: " + e,
+      },
+    });
+  }
+};
+
 const edit = async (req, res) => {
   try {
     const { name, products, location, phoneNumber, description } = req.body;
@@ -501,6 +541,19 @@ const approve = async (req, res) => {
       message: "Please provide seller ID",
     });
   }
+  if (
+    !name ||
+    !imageUrl ||
+    !location ||
+    !phoneNumber ||
+    !products ||
+    !description
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "Please provide all required fields",
+    });
+  }
 
   try {
     const seller = await Seller.findById(id);
@@ -537,7 +590,7 @@ const approve = async (req, res) => {
       imageUrl,
       location,
       phoneNumber,
-      products: product_details,
+      products: products,
       description,
       approved: true,
     });
@@ -564,4 +617,5 @@ module.exports = {
   destroy,
   apply,
   approve,
+  unapproved,
 };

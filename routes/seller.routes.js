@@ -4,7 +4,6 @@ const {
   setPath,
   validate,
   duplicate,
-  setProductPath,
 } = require("../app/middleware/seller.middleware");
 const uploader = require("../app/middleware/uploader.middleware");
 const {
@@ -15,6 +14,8 @@ const {
   destroy,
   show,
   apply,
+  approve,
+  unapproved,
 } = require("../app/controller/seller.controller");
 const sellerUploader = require("../app/middleware/seller.uploader");
 const router = Router();
@@ -30,6 +31,7 @@ router.post(
 );
 
 router.get("/", index);
+router.get("/unapproved", getUser, unapproved);
 router.get("/:id", show);
 router.put("/edit/:id", getUser, edit);
 router.put(
@@ -48,5 +50,7 @@ router.post(
   ]),
   apply
 );
+
+router.put("/approve/:id", getUser, approve);
 
 module.exports = router;
