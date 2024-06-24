@@ -110,11 +110,9 @@ const unapproved = async (req, res) => {
     let sellerList = await Promise.all(
       sellers.map(async (seller) => {
         let locationIds = seller.location;
-        let locationDocs = await Location.find({ _id: { $in: locationIds } });
-        let locations = locationDocs.map((loc) => loc.location);
+        let locations = await Location.find({ _id: { $in: locationIds } });
         let productIds = seller.products;
-        let productDocs = await Plant.find({ _id: { $in: productIds } });
-        let products = productDocs.map((pro) => pro.name);
+        let products = await Plant.find({ _id: { $in: productIds } });
 
         return {
           _id: seller._id,
