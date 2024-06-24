@@ -530,19 +530,18 @@ const apply = async (req, res) => {
 
 const approve = async (req, res) => {
   const id = req.params.id;
-  const { name, imageUrl, location, phoneNumber, products, description } =
-    req.body;
-
   if (!id) {
     return res.status(400).json({
       success: false,
       message: "Please provide seller ID",
     });
   }
+  const { name, imageUrl, phoneNumber, description, products, locations } =
+    req.body;
   if (
     !name ||
     !imageUrl ||
-    !location ||
+    !locations ||
     !phoneNumber ||
     !products ||
     !description
@@ -570,7 +569,7 @@ const approve = async (req, res) => {
       }
     });
 
-    const locationApprovalPromises = location.map(async (locationId) => {
+    const locationApprovalPromises = locations.map(async (locationId) => {
       const location = await Location.findById(locationId);
       if (location && !location.approved) {
         location.approved = true;
@@ -585,8 +584,8 @@ const approve = async (req, res) => {
 
     Object.assign(seller, {
       name,
-      imageUrl,
-      location,
+      image: imageUrl,
+      location: locations,
       phoneNumber,
       products: products,
       description,
